@@ -25,7 +25,7 @@ Les 4 premiers points n'ont pas été fait car le code est relativement simple, 
 
 Les 2 derniers n'ont pas été fait pour des questions de temps
 
-## Start the app
+## Démarrer l'application
 
 L'application a été développée pour être compatible avec node 20.7
 
