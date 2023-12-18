@@ -1,0 +1,39 @@
+import {
+	Body,
+	Get,
+	HttpCode,
+	JsonController,
+	Param,
+	Post,
+} from 'routing-controllers'
+import { QuestionService } from '../services/question.service'
+import { IQuestion, IResult, ISessionDTO } from '@orthographiq/shared'
+import { inject, injectable } from 'tsyringe'
+
+@injectable()
+@JsonController()
+export class QuestionController {
+	constructor(
+		@inject(QuestionService) private questionService: QuestionService
+	) {}
+
+	@Get('/')
+	@HttpCode(200)
+	async getAll(): Promise<Array<IQuestion>> {
+		return this.questionService.getAll()
+	}
+
+	@Post('/')
+	@HttpCode(201)
+	async saveResults(@Body() session: ISessionDTO): Promise<ISessionDTO> {
+		return this.questionService.saveResults(session)
+	}
+
+	@Get(
+		'/results/:sessionId([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})'
+	)
+	@HttpCode(200)
+	async getResults(@Param('sessionId') sessionId: string): Promise<IResult> {
+		return this.questionService.getResults(sessionId)
+	}
+}

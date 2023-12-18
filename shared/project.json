@@ -1,0 +1,46 @@
+{
+	"name": "shared",
+	"$schema": "../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "shared/src",
+	"projectType": "library",
+	"targets": {
+		"build": {
+			"executor": "@nx/esbuild:esbuild",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"platform": "node",
+				"outputPath": "dist",
+				"format": ["cjs"],
+				"bundle": false,
+				"main": "shared/src/index.ts",
+				"tsConfig": "shared/tsconfig.lib.json",
+				"assets": ["shared/src/assets"],
+				"generatePackageJson": true,
+				"esbuildOptions": {
+					"sourcemap": true,
+					"outExtension": {
+						".js": ".js"
+					}
+				}
+			},
+			"configurations": {
+				"development": {},
+				"production": {
+					"generateLockfile": true,
+					"esbuildOptions": {
+						"sourcemap": false,
+						"outExtension": {
+							".js": ".js"
+						}
+					}
+				}
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint",
+			"outputs": ["{options.outputFile}"]
+		}
+	},
+	"tags": []
+}
