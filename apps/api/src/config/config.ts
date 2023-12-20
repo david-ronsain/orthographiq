@@ -5,6 +5,7 @@ export const config = {
 		minExpert: parseInt(process.env.NODE_MIN_EXPERT_GOOD_ANSWERS) ?? 0,
 		minIntermediate:
 			parseInt(process.env.NODE_MIN_INTERMEDIATE_GOOD_ANSWERS) ?? 0,
+		nbAnswers: parseInt(process.env.VITE_NB_QUESTIONS)
 	},
 	db: {
 		host: process.env.NODE_MONGO_HOST ?? 'localhost',

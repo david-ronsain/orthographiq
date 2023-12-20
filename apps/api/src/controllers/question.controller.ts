@@ -7,7 +7,7 @@ import {
 	Post,
 } from 'routing-controllers'
 import { QuestionService } from '../services/question.service'
-import { IQuestion, IResult, ISessionDTO } from '@orthographiq/shared'
+import { IQuestion, IResult, ISessionDTO, SaveResultsValidationSchema } from '@orthographiq/shared'
 import { inject, injectable } from 'tsyringe'
 
 @injectable()
@@ -25,7 +25,7 @@ export class QuestionController {
 
 	@Post('/')
 	@HttpCode(201)
-	async saveResults(@Body() session: ISessionDTO): Promise<ISessionDTO> {
+	async saveResults(@Body({validate: true, required: true, type: SaveResultsValidationSchema}) session: SaveResultsValidationSchema): Promise<ISessionDTO> {
 		return this.questionService.saveResults(session)
 	}
 
