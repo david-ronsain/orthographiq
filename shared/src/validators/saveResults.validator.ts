@@ -1,9 +1,8 @@
+import 'reflect-metadata'
 import { QuestionDifficulty } from "../enums/question.enum";
 import { IAnswerDTO, ISessionDTO } from "../types/session.type";
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-
-const nbQuestions = parseInt(process.env['VITE_NB_QUESTIONS'] || '')
 
 export class SaveResultsValidationSchema implements ISessionDTO {
     @IsNotEmpty()
@@ -16,8 +15,8 @@ export class SaveResultsValidationSchema implements ISessionDTO {
     
     @IsNotEmpty()
     @IsArray()
-    @ArrayMinSize(nbQuestions)
-    @ArrayMaxSize(nbQuestions)
+    @ArrayMinSize(40)
+    @ArrayMaxSize(40)
     @ValidateNested({each: true})
     @Type(() => AnswerValidationSchema)
     answers!: AnswerValidationSchema[];
