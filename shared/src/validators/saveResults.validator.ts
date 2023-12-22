@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { QuestionDifficulty } from "../enums/question.enum";
 import { IAnswerDTO, ISessionDTO } from "../types/session.type";
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 export class SaveResultsValidationSchema implements ISessionDTO {
@@ -9,7 +9,7 @@ export class SaveResultsValidationSchema implements ISessionDTO {
     @IsUUID("4")
     sessionId!: string;
     
-    @IsNotEmpty()
+    @IsOptional()
     @IsEnum(QuestionDifficulty)
     level!: QuestionDifficulty;
     
