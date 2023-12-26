@@ -1,6 +1,7 @@
 export const config = {
 	host: process.env.NODE_HOST ?? 'localhost',
 	port: process.env.NODE_PORT ?? '3000',
+	env: process.env.NODE_ENV ?? 'dev',
 	answers: {
 		minExpert: parseInt(process.env.NODE_MIN_EXPERT_GOOD_ANSWERS) ?? 0,
 		minIntermediate:

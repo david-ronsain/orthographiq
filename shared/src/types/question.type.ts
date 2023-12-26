@@ -1,8 +1,8 @@
-import { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 import { QuestionCategory, QuestionDifficulty } from '../enums/question.enum'
 
 export type IQuestion = {
-	_id: Schema.Types.UUID | string
+	_id: mongoose.Types.ObjectId | string
 	question: string
 	options: string[]
 	correctAnswer: number

@@ -40,6 +40,7 @@ export const getLevel = (
 		nbIntermediateGoodAnswers,
 		nbBeginnerGoodAnswers
 	)
+	
 	return max === nbExpertGoodAnswers &&
 		nbExpertGoodAnswers >= config.answers.minExpert
 		? QuestionDifficulty.EXPERT

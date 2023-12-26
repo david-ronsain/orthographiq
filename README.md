@@ -9,7 +9,7 @@ Voici le test technique de recrutement pour le poste de lead dev
 -   Développement du front avec vue3, vuetify, pinia et vue-router. Le code se trouve dans le dossier apps/front
 -   Création d'une librairie dans le dossier shared, contenant des enumérations, des types et des DTO. Ce code est utilisé à la fois par le front et le back, d'où la création d'une librairie partagée
 -   Tests unitaires:
-  	- Côté back, seuls les helpers ont été testés
+  	- Côté back, les controllers, services, repository et helpers ont été testés
     - Côté front, les composants et les vues ont été testés 
 
 ## Ce qui a été envisagé

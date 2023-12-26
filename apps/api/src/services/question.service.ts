@@ -11,6 +11,7 @@ import { SessionRepository } from '../database/repositories/session.repository'
 import { Types } from 'mongoose'
 import { formatResults, getLevel } from '../helpers/session.helper'
 import { inject, injectable } from 'tsyringe'
+import { HttpError } from 'routing-controllers'
 
 @injectable()
 export class QuestionService {
@@ -48,7 +49,10 @@ export class QuestionService {
 
 		this.sessionRepository.save(session)
 
-		return sessionDTO
+		return {
+			...sessionDTO,
+			level: session.level
+		}
 	}
 
 	/**
@@ -57,34 +61,38 @@ export class QuestionService {
 	 * @returns {IResult} The results
 	 */
 	async getResults(sessionId: string): Promise<IResult> {
-		const session = await this.sessionRepository.get(sessionId)
+		try {
+			const session = await this.sessionRepository.get(sessionId)
 
-		const {
-			pctConjugaisonGoodAnswers,
-			pctGrammaireGoodAnswers,
-			pctOrthographeGoodAnswers,
-		} = formatResults(session)
+			const {
+				pctConjugaisonGoodAnswers,
+				pctGrammaireGoodAnswers,
+				pctOrthographeGoodAnswers,
+			} = formatResults(session)
 
-		return {
-			session: session,
-			pctConjugaisonGoodAnswers,
-			pctGrammaireGoodAnswers,
-			pctOrthographeGoodAnswers,
-			globalPctConjugaison:
-				await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-					session.level,
-					QuestionCategory.CONJUGAISON
-				),
-			globalPctOrthographe:
-				await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-					session.level,
-					QuestionCategory.ORTHOGRAPHE
-				),
-			globalPctGrammaire:
-				await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-					session.level,
-					QuestionCategory.GRAMMAIRE
-				),
+			return {
+				session: session,
+				pctConjugaisonGoodAnswers,
+				pctGrammaireGoodAnswers,
+				pctOrthographeGoodAnswers,
+				globalPctConjugaison:
+					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
+						session.level,
+						QuestionCategory.CONJUGAISON
+					),
+				globalPctOrthographe:
+					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
+						session.level,
+						QuestionCategory.ORTHOGRAPHE
+					),
+				globalPctGrammaire:
+					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
+						session.level,
+						QuestionCategory.GRAMMAIRE
+					),
+			}
+		} catch (error: unknown) {
+			throw new HttpError(404, 'Results not found')
 		}
 	}
 }

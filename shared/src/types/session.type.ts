@@ -1,9 +1,9 @@
-import { Types } from 'mongoose'
+import mongoose, { Types } from 'mongoose'
 import { IQuestion } from './question.type'
 import { QuestionDifficulty } from '../enums/question.enum'
 
 export type ISession = {
-	_id: Types.ObjectId | string
+	_id: mongoose.Types.ObjectId | string
 	sessionId: string
 	level: QuestionDifficulty
 	answers: IAnswer[]
