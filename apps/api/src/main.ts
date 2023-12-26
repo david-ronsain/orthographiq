@@ -8,6 +8,8 @@ import { QuestionService } from './services/question.service'
 import TsyringeAdapter from './adapter'
 import { QuestionRepository } from './database/repositories/question.repository'
 import { SessionRepository } from './database/repositories/session.repository'
+import { LogInterceptor } from './interceptors/log.interceptor'
+import { HttpErrorHandler } from './middlewares/error.middleware'
 
 container.register('QuestionRepository', QuestionRepository)
 container.register('SessionRepository', SessionRepository)
@@ -20,6 +22,11 @@ const app = createExpressServer({
 	cors: {
 		origin: '*',
 	},
+	middlewares: [HttpErrorHandler],
+	defaultErrorHandler: false,
+	interceptors: [LogInterceptor],
+	classTransformer: true,
+	validation: true
 })
 
 MongoDB.init()
