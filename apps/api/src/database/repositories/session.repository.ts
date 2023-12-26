@@ -83,7 +83,8 @@ export class SessionRepository {
 		difficulty: QuestionDifficulty,
 		category: QuestionCategory
 	): Promise<number> {
-		return await Session.aggregate([{
+		return await Session.aggregate([
+			{
 				$lookup: {
 					from: 'questions',
 					localField: 'answers.questionId',
@@ -137,10 +138,10 @@ export class SessionRepository {
 									},
 									{
 										$eq: [
-										'$$item.question.difficulty',
-										difficulty
-										]
-									}
+											'$$item.question.difficulty',
+											difficulty,
+										],
+									},
 								],
 							},
 						},
@@ -178,17 +179,17 @@ export class SessionRepository {
 						$multiply: [
 							{
 								$cond: [
-									{$eq: ['$count', 0]},
+									{ $eq: ['$count', 0] },
 									0,
-									{$divide: ['$countCorrect', '$count']}
-								  ]
+									{ $divide: ['$countCorrect', '$count'] },
+								],
 							},
 							100,
 						],
 					},
 				},
-			}]
-		).then((pct: { pct: number }[]) =>
+			},
+		]).then((pct: { pct: number }[]) =>
 			pct.length ? Math.round(pct[0].pct) : 0
 		)
 	}

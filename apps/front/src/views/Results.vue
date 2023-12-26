@@ -3,7 +3,6 @@
 	import { useStore } from '../store/store'
 	import { onMounted, ref } from 'vue'
 	import {
-		type IResult,
 		QuestionDifficulty,
 		QuestionCategory,
 		type IAnswer,
@@ -12,10 +11,14 @@
 	import ResultsDetails from '../components/results/ResultsDetails.vue'
 	import { mdiLightbulbVariantOutline } from '@mdi/js'
 	import { getColorByLevel, getColorByRate } from '../helpers/question.helper'
+	import { storeToRefs } from 'pinia'
+	import { watch } from 'vue'
+	import router from '../router'
 
 	const store = useStore()
 	const route = useRoute()
-	const results = ref(undefined as unknown as IResult)
+	const { areResultsLoading, areResultsWithError, getResults } =
+		storeToRefs(store)
 
 	const level = ref('' as unknown as QuestionDifficulty)
 	const progressBars = ref(
@@ -26,59 +29,74 @@
 	)
 	const shouldFocusOn = ref([] as QuestionCategory[])
 
-	onMounted(async () => {
-		results.value = await store.loadResults(
-			route.params.sessionId?.toString()
-		)
-		level.value = results.value.session.level
-		progressBars.value = [
-			{
-				category: QuestionCategory.ORTHOGRAPHE,
-				color: getColorByRate(results.value.pctOrthographeGoodAnswers),
-				pct: results.value.pctOrthographeGoodAnswers,
-			},
-			{
-				category: QuestionCategory.GRAMMAIRE,
-				color: getColorByRate(results.value.pctGrammaireGoodAnswers),
-				pct: results.value.pctGrammaireGoodAnswers,
-			},
-			{
-				category: QuestionCategory.CONJUGAISON,
-				color: getColorByRate(results.value.pctConjugaisonGoodAnswers),
-				pct: results.value.pctConjugaisonGoodAnswers,
-			},
-		]
-		globalProgressBars.value = [
-			{
-				category: QuestionCategory.ORTHOGRAPHE,
-				color: getColorByRate(results.value.globalPctOrthographe),
-				pct: results.value.globalPctOrthographe,
-			},
-			{
-				category: QuestionCategory.GRAMMAIRE,
-				color: getColorByRate(results.value.globalPctGrammaire),
-				pct: results.value.globalPctGrammaire,
-			},
-			{
-				category: QuestionCategory.CONJUGAISON,
-				color: getColorByRate(results.value.globalPctConjugaison),
-				pct: results.value.globalPctConjugaison,
-			},
-		]
+	watch(getResults, (newValue) => {
+		if (newValue && newValue.session) {
+			level.value = getResults.value.session.level
+			progressBars.value = [
+				{
+					category: QuestionCategory.ORTHOGRAPHE,
+					color: getColorByRate(
+						getResults.value.pctOrthographeGoodAnswers
+					),
+					pct: getResults.value.pctOrthographeGoodAnswers,
+				},
+				{
+					category: QuestionCategory.GRAMMAIRE,
+					color: getColorByRate(
+						getResults.value.pctGrammaireGoodAnswers
+					),
+					pct: getResults.value.pctGrammaireGoodAnswers,
+				},
+				{
+					category: QuestionCategory.CONJUGAISON,
+					color: getColorByRate(
+						getResults.value.pctConjugaisonGoodAnswers
+					),
+					pct: getResults.value.pctConjugaisonGoodAnswers,
+				},
+			]
+			globalProgressBars.value = [
+				{
+					category: QuestionCategory.ORTHOGRAPHE,
+					color: getColorByRate(
+						getResults.value.globalPctOrthographe
+					),
+					pct: getResults.value.globalPctOrthographe,
+				},
+				{
+					category: QuestionCategory.GRAMMAIRE,
+					color: getColorByRate(getResults.value.globalPctGrammaire),
+					pct: getResults.value.globalPctGrammaire,
+				},
+				{
+					category: QuestionCategory.CONJUGAISON,
+					color: getColorByRate(
+						getResults.value.globalPctConjugaison
+					),
+					pct: getResults.value.globalPctConjugaison,
+				},
+			]
 
-		const toSort = [...progressBars.value]
-		toSort
-			.filter((progress) => progress.pct < 50)
-			.sort((a, b) => a.pct - b.pct)
-			.forEach((progress) => shouldFocusOn.value.push(progress.category))
-		if (!shouldFocusOn.value.length) {
+			const toSort = [...progressBars.value]
 			toSort
+				.filter((progress) => progress.pct < 50)
 				.sort((a, b) => a.pct - b.pct)
-				.slice(0, 1)
 				.forEach((progress) =>
 					shouldFocusOn.value.push(progress.category)
 				)
+			if (!shouldFocusOn.value.length) {
+				toSort
+					.sort((a, b) => a.pct - b.pct)
+					.slice(0, 1)
+					.forEach((progress) =>
+						shouldFocusOn.value.push(progress.category)
+					)
+			}
 		}
+	})
+
+	onMounted(async () => {
+		await store.loadResults(route.params.sessionId?.toString())
 	})
 </script>
 
@@ -86,13 +104,22 @@
 	<v-row>
 		<v-col
 			cols="12"
-			class="pa-1 pa-lg-3">
+			class="pa-1 pa-lg-3"
+			:data-data="`${areResultsLoading}  ${areResultsWithError}`">
 			<div class="quizz d-flex align-center justify-center">
 				<v-skeleton-loader
-					v-if="!results"
+					v-if="areResultsLoading"
 					class="mx-auto border"
 					max-width="600"
 					type="article" />
+
+				<v-alert
+					v-else-if="areResultsWithError"
+					color="error"
+					closable
+					@click:close="router.push({ name: 'quizz' })">
+					Impossible de charger les résultats de votre test
+				</v-alert>
 
 				<v-card
 					v-else
@@ -137,8 +164,8 @@
 
 						<ResultsIncorrectAnswers
 							class="mt-1 answers"
-							v-if="results.session.answers.filter((answer: IAnswer) => ! answer.correct).length"
-							:answers="results.session.answers.filter((answer: IAnswer) => ! answer.correct)" />
+							v-if="getResults.session.answers.filter((answer: IAnswer) => ! answer.correct).length"
+							:answers="getResults.session.answers.filter((answer: IAnswer) => ! answer.correct)" />
 					</v-card-text>
 				</v-card>
 			</div>
