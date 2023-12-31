@@ -1,4 +1,6 @@
 export const config = {
+	host: import.meta.env.VITE_HOST || 'localhost',
+	port: parseInt(import.meta.env.VITE_PORT || 3002),
 	nbQuestions: parseInt(import.meta.env.VITE_NB_QUESTIONS || 40),
 	apiUrl: import.meta.env.VITE_API_URL || '',
 	maxRateBeginner: parseInt(import.meta.env.VITE_MAX_RATE_BEGINNER || 34),

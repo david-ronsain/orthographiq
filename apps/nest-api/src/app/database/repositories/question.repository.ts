@@ -17,16 +17,19 @@ export class QuestionRepository {
 		return this.model.find({ _id: { $in: ids } })
 	}
 
-	loadData(): void {
-		this.model.countDocuments().then(async (count: number) => {
-			if (count < questionsData.length) {
-				await this.model.deleteMany()
-				await this.model.create(
-					questionsData.map((question: IQuestionDTO) =>
-						Question.fromDTO(question)
+	async loadData(): Promise<void> {
+		await this.model
+			.countDocuments()
+			.then(async (count: number) => {
+				if (count < questionsData.length) {
+					await this.model.deleteMany()
+					await this.model.create(
+						questionsData.map((question: IQuestionDTO) =>
+							Question.fromDTO(question)
+						)
 					)
-				)
-			}
-		})
+				}
+			})
+			.catch(() => 0)
 	}
 }

@@ -21,13 +21,13 @@
 		storeToRefs(store)
 
 	const level = ref('' as unknown as QuestionDifficulty)
-	const progressBars = ref(
-		[] as { category: QuestionCategory; color: string; pct: number }[]
-	)
-	const globalProgressBars = ref(
-		[] as { category: QuestionCategory; color: string; pct: number }[]
-	)
-	const shouldFocusOn = ref([] as QuestionCategory[])
+	const progressBars = ref<
+		Array<{ category: QuestionCategory; color: string; pct: number }>
+	>([])
+	const globalProgressBars = ref<
+		Array<{ category: QuestionCategory; color: string; pct: number }>
+	>([])
+	const shouldFocusOn = ref<Array<QuestionCategory>>([])
 
 	watch(getResults, (newValue) => {
 		if (newValue && newValue.session) {
@@ -104,17 +104,17 @@
 	<v-row>
 		<v-col
 			cols="12"
-			class="pa-1 pa-lg-3"
-			:data-data="`${areResultsLoading}  ${areResultsWithError}`">
+			class="pa-1 pa-lg-3">
 			<div class="quizz d-flex align-center justify-center">
 				<v-skeleton-loader
 					v-if="areResultsLoading"
-					class="mx-auto border"
+					class="mx-auto border loading"
 					max-width="600"
 					type="article" />
 
 				<v-alert
 					v-else-if="areResultsWithError"
+					class="not-loaded"
 					color="error"
 					closable
 					@click:close="router.push({ name: 'quizz' })">
@@ -123,6 +123,7 @@
 
 				<v-card
 					v-else
+					class="loaded"
 					color="grey-lighten-5"
 					border
 					rounded

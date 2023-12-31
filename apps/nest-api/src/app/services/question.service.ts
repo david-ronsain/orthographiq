@@ -75,26 +75,30 @@ export class QuestionService implements OnModuleInit {
 				pctOrthographeGoodAnswers,
 			} = formatResults(session)
 
+			const getGlobalPct = async (category: QuestionCategory) =>
+				await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
+					session.level,
+					category
+				)
+
+			const [
+				globalPctConjugaison,
+				globalPctOrthographe,
+				globalPctGrammaire,
+			] = await Promise.all([
+				getGlobalPct(QuestionCategory.CONJUGAISON),
+				getGlobalPct(QuestionCategory.ORTHOGRAPHE),
+				getGlobalPct(QuestionCategory.GRAMMAIRE),
+			])
+
 			return {
 				session: session,
 				pctConjugaisonGoodAnswers,
 				pctGrammaireGoodAnswers,
 				pctOrthographeGoodAnswers,
-				globalPctConjugaison:
-					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-						session.level,
-						QuestionCategory.CONJUGAISON
-					),
-				globalPctOrthographe:
-					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-						session.level,
-						QuestionCategory.ORTHOGRAPHE
-					),
-				globalPctGrammaire:
-					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-						session.level,
-						QuestionCategory.GRAMMAIRE
-					),
+				globalPctConjugaison,
+				globalPctOrthographe,
+				globalPctGrammaire,
 			}
 		} catch (error: unknown) {
 			throw new HttpException('Results not found', HttpStatus.NOT_FOUND)

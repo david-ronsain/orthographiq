@@ -1,13 +1,16 @@
-import { setActivePinia, createPinia } from 'pinia'
-import { mount, flushPromises } from '@vue/test-utils'
+import { setActivePinia, createPinia, defineStore } from 'pinia'
+import { createTestingPinia } from '@pinia/testing'
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils'
 import Results from '../../../src/views/Results.vue'
-import vuetify from '../../plugins/vuetify'
 import { questions } from '../../../../../shared/src/tests/data/question.data'
 import { QuestionDifficulty, type IResult } from '@orthographiq/shared'
 import { v4 } from 'uuid'
 import router from '../../router/'
+import vuetify from '../../plugins/vuetify'
 
-const result: IResult = {
+let wrapper: VueWrapper
+
+const results: IResult = {
 	globalPctConjugaison: 10,
 	globalPctGrammaire: 20,
 	globalPctOrthographe: 30,
@@ -38,27 +41,83 @@ const result: IResult = {
 	},
 }
 
+const useStore = defineStore('store', {
+	state: () => ({
+		resultsLoading: true,
+		results,
+		resultsWithError: false,
+	}),
+	getters: {
+		areResultsLoading: (state) => state.resultsLoading,
+		areResultsWithError: (state) => state.resultsWithError,
+		getResults: (state) => state.results,
+	},
+	actions: {
+		loadResults: vi.fn(),
+	},
+})
+let store = useStore(createTestingPinia())
+
 global.fetch = vi.fn(() =>
 	Promise.resolve({
-		json: () => Promise.resolve(result),
+		json: () => Promise.resolve(results),
 	})
 )
 
 describe('Testing the Results view', () => {
 	beforeEach(() => {
-		setActivePinia(createPinia())
+		vi.resetAllMocks()
+		store = useStore(createTestingPinia())
 	})
 
-	test('Testing the data displayed', async () => {
-		const wrapper = mount(Results, {
-			global: { plugins: [vuetify, router] },
+	it('should display the loader', async () => {
+		wrapper = mount(Results, {
+			global: {
+				plugins: [vuetify, router],
+				provide: [store],
+			},
 		})
-		expect(wrapper).toBeTruthy()
-
 		await flushPromises()
 
-		expect(wrapper.find('.level strong').text()).toBe(result.session.level)
-		expect(wrapper.find('.progress')).toBeTruthy()
-		expect(wrapper.findAll('.questions').length).toBe(0)
+		expect(wrapper.exists()).toBe(true)
+		expect(wrapper.find('.loading').exists()).toBe(true)
+	})
+
+	it('should display the error state', async () => {
+		store.loadResults.mockImplementation(() => {
+			store.$patch({
+				resultsLoading: false,
+				resultsWithError: true,
+			})
+		})
+		wrapper = mount(Results, {
+			global: {
+				plugins: [vuetify, router],
+				provide: [store],
+			},
+		})
+		await flushPromises()
+
+		expect(wrapper.exists()).toBe(true)
+		expect(wrapper.find('.not-loaded').exists()).toBe(true)
+	})
+
+	it('should display the results', async () => {
+		store.loadResults.mockImplementation(() => {
+			store.$patch({
+				resultsLoading: false,
+				resultsWithError: false,
+			})
+		})
+		wrapper = mount(Results, {
+			global: {
+				plugins: [vuetify, router],
+				provide: [store],
+			},
+		})
+		await flushPromises()
+
+		expect(wrapper.exists()).toBe(true)
+		expect(wrapper.find('.loaded').exists()).toBe(true)
 	})
 })

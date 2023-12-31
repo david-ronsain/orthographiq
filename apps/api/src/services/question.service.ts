@@ -51,7 +51,7 @@ export class QuestionService {
 
 		return {
 			...sessionDTO,
-			level: session.level
+			level: session.level,
 		}
 	}
 
@@ -70,26 +70,30 @@ export class QuestionService {
 				pctOrthographeGoodAnswers,
 			} = formatResults(session)
 
+			const getGlobalPct = async (category: QuestionCategory) =>
+				await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
+					session.level,
+					category
+				)
+
+			const [
+				globalPctConjugaison,
+				globalPctOrthographe,
+				globalPctGrammaire,
+			] = await Promise.all([
+				getGlobalPct(QuestionCategory.CONJUGAISON),
+				getGlobalPct(QuestionCategory.ORTHOGRAPHE),
+				getGlobalPct(QuestionCategory.GRAMMAIRE),
+			])
+
 			return {
 				session: session,
 				pctConjugaisonGoodAnswers,
 				pctGrammaireGoodAnswers,
 				pctOrthographeGoodAnswers,
-				globalPctConjugaison:
-					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-						session.level,
-						QuestionCategory.CONJUGAISON
-					),
-				globalPctOrthographe:
-					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-						session.level,
-						QuestionCategory.ORTHOGRAPHE
-					),
-				globalPctGrammaire:
-					await this.sessionRepository.getPctCorrectAnswersByCategoryAndDifficulty(
-						session.level,
-						QuestionCategory.GRAMMAIRE
-					),
+				globalPctConjugaison,
+				globalPctOrthographe,
+				globalPctGrammaire,
 			}
 		} catch (error: unknown) {
 			throw new HttpError(404, 'Results not found')

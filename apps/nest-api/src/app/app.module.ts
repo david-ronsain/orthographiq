@@ -39,7 +39,7 @@ import { QuestionModule } from './question.module'
 				new winston.transports.File({
 					filename: 'warning.log',
 					level: 'warning',
-					dirname: 'apps/net-api/logs/',
+					dirname: 'apps/nest-api/logs/',
 				}),
 			],
 		}),

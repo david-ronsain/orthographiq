@@ -2,7 +2,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
 import ResultsDetails from '../../../components/results/ResultsDetails.vue'
 import vuetify from '../../../plugins/vuetify'
-import { QuestionCategory } from '../../../../../../shared/src/enums/question.enum'
+import { QuestionCategory } from '@orthographiq/shared'
 import { getColorByRate } from '../../../helpers/question.helper'
 
 describe('Testing the ResultsDetails component', () => {

@@ -61,15 +61,17 @@ export const countGoodAnswersByDifficulty = (
 	session: ISessionDTO,
 	difficulty: QuestionDifficulty
 ): number => {
-	return session.answers.filter((answer: IAnswerDTO) => {
+	return session.answers.reduce((count, answer: IAnswerDTO) => {
 		const question = questions.find(
-			(question: IQuestion) =>
-				question._id.toString() === answer.questionId.toString()
+			(q) => q._id.toString() === answer.questionId.toString()
 		)
-		return question
-			? question.difficulty === difficulty && answer.correct
-			: false
-	}).length
+		return (
+			count +
+			(question && question.difficulty === difficulty && answer.correct
+				? 1
+				: 0)
+		)
+	}, 0)
 }
 
 /**
@@ -84,15 +86,21 @@ export const formatResults = (
 	pctGrammaireGoodAnswers: number
 	pctOrthographeGoodAnswers: number
 } => {
-	const nbConjugaisonGoodAnswers = countByCategory(
-		session,
+	const countCategory = (
+		category: QuestionCategory,
+		correctAnswersOnly = false
+	) =>
+		session.answers.filter(
+			(answer) =>
+				answer.question.category === category &&
+				(correctAnswersOnly ? answer.correct : true)
+		).length
+
+	const nbConjugaisonGoodAnswers = countCategory(
 		QuestionCategory.CONJUGAISON,
 		true
 	)
-	const nbConjugaisonQuestions = countByCategory(
-		session,
-		QuestionCategory.CONJUGAISON
-	)
+	const nbConjugaisonQuestions = countCategory(QuestionCategory.CONJUGAISON)
 	const pctConjugaisonGoodAnswers =
 		nbConjugaisonQuestions > 0
 			? Math.round(
@@ -100,29 +108,21 @@ export const formatResults = (
 			  )
 			: 0
 
-	const nbGrammaireGoodAnswers = countByCategory(
-		session,
+	const nbGrammaireGoodAnswers = countCategory(
 		QuestionCategory.GRAMMAIRE,
 		true
 	)
-	const nbGrammaireQuestions = countByCategory(
-		session,
-		QuestionCategory.GRAMMAIRE
-	)
+	const nbGrammaireQuestions = countCategory(QuestionCategory.GRAMMAIRE)
 	const pctGrammaireGoodAnswers =
 		nbGrammaireQuestions > 0
 			? Math.round((nbGrammaireGoodAnswers / nbGrammaireQuestions) * 100)
 			: 0
 
-	const nbOrthographeGoodAnswers = countByCategory(
-		session,
+	const nbOrthographeGoodAnswers = countCategory(
 		QuestionCategory.ORTHOGRAPHE,
 		true
 	)
-	const nbOrthographeQuestions = countByCategory(
-		session,
-		QuestionCategory.ORTHOGRAPHE
-	)
+	const nbOrthographeQuestions = countCategory(QuestionCategory.ORTHOGRAPHE)
 	const pctOrthographeGoodAnswers =
 		nbOrthographeQuestions > 0
 			? Math.round(
@@ -148,10 +148,10 @@ export const countByCategory = (
 	session: ISession,
 	category: QuestionCategory,
 	correctAnswersOnly = false
-) => {
+): number => {
 	return session.answers.filter(
 		(answer: IAnswer) =>
 			answer.question.category === category &&
-			((answer.correct && correctAnswersOnly) || !correctAnswersOnly)
+			(correctAnswersOnly ? answer.correct : true)
 	).length
 }

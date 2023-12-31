@@ -5,24 +5,17 @@
 	"projectType": "application",
 	"targets": {
 		"build": {
-			"executor": "@nx/esbuild:esbuild",
+			"executor": "@nx/webpack:webpack",
 			"outputs": ["{options.outputPath}"],
 			"defaultConfiguration": "production",
 			"options": {
-				"platform": "node",
-				"outputPath": "dist",
-				"format": ["cjs"],
-				"bundle": false,
+				"target": "node",
+				"compiler": "tsc",
+				"outputPath": "dist/apps/api",
 				"main": "apps/api/src/main.ts",
 				"tsConfig": "apps/api/tsconfig.app.json",
 				"assets": ["apps/api/src/assets"],
-				"generatePackageJson": true,
-				"esbuildOptions": {
-					"sourcemap": true,
-					"outExtension": {
-						".js": ".js"
-					}
-				}
+				"webpackConfig": "apps/nest-api/webpack.config.js"
 			},
 			"configurations": {
 				"development": {},

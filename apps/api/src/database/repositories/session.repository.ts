@@ -11,7 +11,7 @@ import { injectable } from 'tsyringe'
 @injectable()
 export class SessionRepository {
 	async save(session: ISessionDTO): Promise<void> {
-		Session.create(session)
+		await Session.create(session)
 	}
 
 	/**
@@ -207,7 +207,7 @@ export class SessionRepository {
 				...answer,
 				question: {
 					...answer.question,
-					_id: answer.question._id.toString(),
+					_id: answer.question?._id?.toString() || '',
 				},
 			})),
 		}

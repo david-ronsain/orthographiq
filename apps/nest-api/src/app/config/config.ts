@@ -1,6 +1,6 @@
 export const config = {
 	host: process.env.NODE_NEST_API_HOST ?? 'localhost',
-	port: process.env.NODE_NEST_API_PORT ?? '3002',
+	port: process.env.NODE_NEST_API_PORT ?? '3001',
 	env: process.env.NODE_ENV ?? 'dev',
 	answers: {
 		minExpert: parseInt(process.env.NODE_MIN_EXPERT_GOOD_ANSWERS) ?? 0,

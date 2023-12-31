@@ -47,12 +47,12 @@
 			? 'text-red'
 			: ''
 	}
-	function saveAnswer(answer: number): void {
-		store.saveAnswer(answer)
-		answer = 0
+	function saveAnswer(): void {
+		store.saveAnswer(answer.value)
+		answer.value = 0
 	}
 
-	watch(getCurrentQuestion, () => {
+	watch(getCurrentQuestion.value, () => {
 		answer.value = 0
 	})
 </script>
@@ -132,7 +132,7 @@
 							class="mx-auto mt-1"
 							:disabled="answer === 0"
 							height="40"
-							@click="saveAnswer(answer)">
+							@click="saveAnswer">
 							<v-icon
 								size="16"
 								class="mr-2">

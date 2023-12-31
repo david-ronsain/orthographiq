@@ -6,11 +6,11 @@ import {
 	QuestionDifficulty,
 } from '@orthographiq/shared'
 import { Session } from '../schemas/session.schema'
-import { injectable } from 'tsyringe'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { Injectable } from '@nestjs/common'
 
-@injectable()
+@Injectable()
 export class SessionRepository {
 	constructor(@InjectModel(Session.name) private model: Model<Session>) {}
 
@@ -68,7 +68,6 @@ export class SessionRepository {
 					$unset: 'questions',
 				},
 			])
-			.exec()
 			.then((sessions: ISession[]) =>
 				sessions.length
 					? sessions.map((session: ISession) =>
@@ -219,7 +218,7 @@ export class SessionRepository {
 				...answer,
 				question: {
 					...answer.question,
-					_id: answer.question._id.toString(),
+					_id: answer.question?._id?.toString(),
 				},
 			})),
 		}

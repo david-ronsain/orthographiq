@@ -9,13 +9,13 @@ export default defineConfig({
 	cacheDir: '../../node_modules/.vite/apps/front',
 
 	server: {
-		port: 3001,
-		host: 'localhost',
+		port: 3002,
+		host: '0.0.0.0',
 	},
 
 	preview: {
-		port: 3101,
-		host: 'localhost',
+		port: 3102,
+		host: '0.0.0.0',
 	},
 
 	plugins: [vue(), nxViteTsPaths(), vuetify({ autoImport: true })],

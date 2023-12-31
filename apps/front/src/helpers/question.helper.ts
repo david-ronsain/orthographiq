@@ -5,6 +5,12 @@ import {
 } from '@orthographiq/shared'
 import { config } from '../config/config'
 
+const difficultyColors = new Map([
+	[QuestionDifficulty.DEBUTANT, config.colors.beginner],
+	[QuestionDifficulty.INTERMEDIAIRE, config.colors.intermediate],
+	[QuestionDifficulty.EXPERT, config.colors.expert],
+])
+
 /**
  * Returns the next question not yet answered for a given difficulty
  * @param {IQuestion[]} questions The list of questions
@@ -99,11 +105,7 @@ export const getNextQuestion = (
  * @returns {string}
  */
 export const getColorByLevel = (difficulty: QuestionDifficulty): string => {
-	if (difficulty === QuestionDifficulty.DEBUTANT)
-		return config.colors.beginner
-	else if (difficulty === QuestionDifficulty.INTERMEDIAIRE)
-		return config.colors.intermediate
-	else return config.colors.expert
+	return difficultyColors.get(difficulty) || ''
 }
 
 /**

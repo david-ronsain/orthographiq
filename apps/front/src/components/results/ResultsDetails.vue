@@ -8,11 +8,13 @@
 			type: Array as PropType<
 				{ category: QuestionCategory; color: string; pct: number }[]
 			>,
+			default: () => [],
 		},
 		globalData: {
 			type: Array as PropType<
 				{ category: QuestionCategory; color: string; pct: number }[]
 			>,
+			default: () => [],
 		},
 	})
 </script>

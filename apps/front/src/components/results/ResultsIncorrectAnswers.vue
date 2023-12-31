@@ -1,13 +1,16 @@
 <script setup lang="ts">
 	import { type IAnswer } from '@orthographiq/shared'
-	import type { PropType } from 'vue'
+	import { computed, type PropType } from 'vue'
 
-	defineProps({
+	const props = defineProps({
 		answers: {
 			type: Array as PropType<IAnswer[]>,
 			required: true,
 		},
 	})
+	const filteredIncorrectAnswers = computed(() =>
+		props.answers.filter((answer: IAnswer) => !answer.correct)
+	)
 </script>
 
 <template>
@@ -21,7 +24,7 @@
 			</h1>
 			<v-expansion-panels class="mt-2">
 				<v-expansion-panel
-					v-for="answer in answers.filter((answer: IAnswer) => !answer.correct)"
+					v-for="answer in filteredIncorrectAnswers"
 					:key="`question-${answer.question._id}`">
 					<v-expansion-panel-title>
 						<span v-html="answer.question.question" />

@@ -1,0 +1,110 @@
+services:
+    mongo:
+        image: mongo
+        volumes:
+            - mongodata:/app
+        restart: unless-stopped
+        ports:
+            - '1234:27017'
+        expose:
+            - 1234
+        environment:
+            MONGO_INITDB_ROOT_USERNAME:
+            MONGO_INITDB_ROOT_PASSWORD:
+        networks:
+            main:
+                ipv4_address: 192.168.1.72
+
+    expressapi:
+        image: node:20-alpine
+        restart: unless-stopped
+        expose:
+            - 3000
+        ports:
+            - '3000:3000'
+        working_dir: /app
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        command:
+            - /bin/sh
+            - -c
+            - |
+                cd /app
+                cp .env.docker .env
+                npm i
+                npx nx reset
+                npx nx build api --with-deps --configuration production
+                node --env-file .env ./dist/apps/api/main.js
+        depends_on:
+            - mongo
+        networks:
+            main:
+                ipv4_address: 192.168.1.73
+
+    nestapi:
+        image: node:20-alpine
+        restart: unless-stopped
+        expose:
+            - 3001
+        ports:
+            - '3001:3001'
+        working_dir: /app
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        command:
+            - /bin/sh
+            - -c
+            - |
+                cd /app
+                cp .env.docker .env
+                npm i
+                npx nx reset
+                npx nx build nest-api --with-deps --configuration production
+                node --env-file .env ./dist/apps/nest-api/main.js
+        depends_on:
+            - mongo
+        networks:
+            main:
+                ipv4_address: 192.168.1.74
+
+    front:
+        image: node:20-alpine
+        restart: unless-stopped
+        expose:
+            - 3002
+        ports:
+            - '80:3002'
+        working_dir: /app
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        command:
+            - /bin/sh
+            - -c
+            - |
+                cd /app
+                cp .env.docker .env
+                npm i
+                npx nx reset
+                npx nx build front --with-deps --configuration production
+                npx nx serve-static front
+        depends_on:
+            - expressapi
+            - nestapi
+        networks:
+            main:
+                ipv4_address: 192.168.1.75
+
+volumes:
+    mongodata:
+
+networks:
+    main:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: '192.168.1.0/24'
+                  ip_range: '192.168.1.71/32'
+                  gateway: '192.168.1.1'

@@ -1,5 +1,8 @@
-import { QuestionDifficulty, type IAnswer } from '../../../../../shared/src'
-import { questions } from '../../../../../shared/src/tests/data/question.data'
+import {
+	QuestionDifficulty,
+	type IAnswer,
+	questions,
+} from '@orthographiq/shared'
 import {
 	filterRemainingQuestionsByDifficulty,
 	getColorByLevel,

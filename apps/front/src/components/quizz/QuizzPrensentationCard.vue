@@ -16,9 +16,9 @@
 					border
 					rounded
 					elevation="1">
-					<v-card-title
-						>Bienvenue dans notre test de français</v-card-title
-					>
+					<v-card-title>
+						Bienvenue dans notre test de français
+					</v-card-title>
 
 					<v-card-text class="pb-0 text-body-1">
 						<h2>

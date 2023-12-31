@@ -2,8 +2,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { mount, flushPromises } from '@vue/test-utils'
 import Quizz from '../../../src/views/Quizz.vue'
 import vuetify from '../../plugins/vuetify'
-import { questions } from '../../../../../shared/src/tests/data/question.data'
-import { type IQuestion } from '../../../../../shared/src/types/question.type'
+import { questions, type IQuestion } from '@orthographiq/shared'
 
 global.fetch = vi.fn(() =>
 	Promise.resolve({

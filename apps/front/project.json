@@ -72,7 +72,11 @@
 		"serve-static": {
 			"executor": "@nx/web:file-server",
 			"options": {
-				"buildTarget": "front:build"
+				"buildTarget": "front:build",
+				"host": "0.0.0.0",
+				"port": 3002,
+				"cors": true,
+				"gzip": true
 			}
 		}
 	}

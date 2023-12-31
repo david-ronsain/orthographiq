@@ -25,6 +25,6 @@
 	<div>
 		<QuizzPresentation v-if="!hasQuizzStarted" />
 
-		<QuizzCard v-else-if="!isQuizzFinished && getCurrentQuestion" />
+		<QuizzCard v-else-if="!isQuizzFinished && !!getCurrentQuestion" />
 	</div>
 </template>
